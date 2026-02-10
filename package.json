@@ -1,0 +1,23 @@
+{
+  "name": "my-express-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www && node ./routes/ws.js",
+    "dev": "nodemon ./bin/www",
+    "debug": "node --inspect ./bin/www",
+    "debug:brk": "node --inspect-brk ./bin/www"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "mongoose": "^9.0.1",
+    "morgan": "~1.9.1",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.11",
+    "ws": "^8.18.3"
+  }
+}
