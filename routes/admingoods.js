@@ -59,6 +59,8 @@ const adminMiddleware = require('../midfile/adminMIddleware');
 // ============================================
 // 前端是在formdata中传递商品数据（包含文件）
 // upload.any() 用于处理多个文件上传，文件字段名可以在req.files中访问
+// 作用：处理商品上传请求，包括文件上传和表单数据解析
+// adminMiddleware 是管理员中间件，用于判断用户是否是管理员
 router.post('/addgoods/:userId/:role', upload.any(), adminMiddleware, async (req, res) => {
     //查询商检的货架数据库，用userId和role来查询 判断是否为商家
     const { userId, role } = req.params;
@@ -68,6 +70,9 @@ router.post('/addgoods/:userId/:role', upload.any(), adminMiddleware, async (req
     console.log('上传的文件:', req.files);
     try {
         // 检查用户是否存在
+        // 用聚合管道查询用户和商家商品
+        // aggregate() 方法用于执行聚合操作，返回一个 Promise
+        // 作用：根据用户ID和角色查询用户，同时连接商家商品数据库，根据用户ID匹配商品
         const user = await User.aggregate([
             //根据用户id和角色来查询用户 查询user表中的用户
             { $match: { _id: new ObjectId(userId), role: role } },
