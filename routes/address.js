@@ -65,10 +65,11 @@ router.get('/getadrs/:userId', async function (req, res, next) {
 
 })
 // 删除地址
-router.delete('/deladrs/:_id', async function (req, res, next) {
+router.delete('/deladrs/:_id/:userId', async function (req, res, next) {
     const { _id } = req.params;
-    const { userId } = req.query;
+    const { userId } = req.params;
     try {
+        console.log('从前端接收:', _id, userId);
         // 第1步：等待数据库操作完成,前端传回 _id 来删除地址和用户id判断是否匹配 
         // 如果匹配，删除地址
         const result = await Address.deleteOne({ _id: _id, userId: userId });
@@ -78,6 +79,7 @@ router.delete('/deladrs/:_id', async function (req, res, next) {
         // 第2步：数据库完成后才执行这里
         return res.status(200).json({
             message: '地址删除成功',
+
         })
     } catch (error) {
         return res.status(500).json({ message: '服务器错误' });
