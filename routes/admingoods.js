@@ -51,7 +51,8 @@ const Goods = require('../models/Goods');
 // 引入商家商品模型
 const ShangJiaGoods = require('../models/shangjiangoods');
 // 引入管理员中间件
-const adminMiddleware = require('../midfile/adminMIddleware');
+// 引入token验证中间件
+const { VerifyToken } = require('../midfile/jwtMIddleWare');
 
 //只提供给商家使用的api接口 商家上架的商品存在商家的数据库
 // ============================================
@@ -61,13 +62,19 @@ const adminMiddleware = require('../midfile/adminMIddleware');
 // upload.any() 用于处理多个文件上传，文件字段名可以在req.files中访问
 // 作用：处理商品上传请求，包括文件上传和表单数据解析
 // adminMiddleware 是管理员中间件，用于判断用户是否是管理员
-router.post('/addgoods/:userId/:role', upload.any(), adminMiddleware, async (req, res) => {
+router.post('/addgoods/:userId/:role', upload.any(),  async (req, res, next) => {
     //查询商检的货架数据库，用userId和role来查询 判断是否为商家
-    const { userId, role } = req.params;
-    console.log('userId:', userId);
-    console.log('role:', role);
-    console.log('前端传回的表单数据:', req.body);
-    console.log('上传的文件:', req.files);
+    const { userId, role, } = req.params;
+    const { token, name } = req.cookies;
+    // console.log('userId:', userId);
+    // console.log('role:', role);
+    // console.log('前端传回的表单数据:', req.body);
+    // console.log('上传的文件:', req.files);
+    // 查看cookie中的name和token是否正确
+    console.log('cookie:', req.cookies);
+    console.log('token:', token);
+    console.log('name:', name);
+
     try {
         // 检查用户是否存在
         // 用聚合管道查询用户和商家商品
@@ -126,7 +133,7 @@ router.post('/addgoods/:userId/:role', upload.any(), adminMiddleware, async (req
     }
 
     // 检查商品ID是否已存在
-    const  existingGoods = await ShangJiaGoods.findOne({ goodsId: req.body.goodsId });
+    const existingGoods = await ShangJiaGoods.findOne({ goodsId: req.body.goodsId });
     console.log('existingGoods:', existingGoods);
     if (existingGoods) {
         return res.status(400).json({

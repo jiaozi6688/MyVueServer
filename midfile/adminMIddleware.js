@@ -16,4 +16,4 @@ const isShangJia = (req, res, next) => {
 
 }
 
-module.exports = isShangJia;
+module.exports = { isShangJia };

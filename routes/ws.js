@@ -13,7 +13,7 @@ const clients = [];
 wss.on('connection', ws => {
     // 将每一个连接的 WebSocket 实例添加到数组中
     clients.push(ws);
-    console.log('新的WebSocket连接'); 
+    console.log('新的WebSocket连接');
 
     // 处理收到的消息事件
     ws.on('message', (message) => {

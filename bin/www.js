@@ -12,7 +12,7 @@ var http = require('http');
 /**
  * Get port from environment and store in Express.
  */
-
+// 环境变量PORT || 3000
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
@@ -88,4 +88,7 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + (addr && addr.port || 'unknown');
   debug('Listening on ' + bind);
+  console.log('Server running at:');
+  console.log('  http://localhost:' + (addr && addr.port || 'unknown'));
+  console.log('  http://127.0.0.1:' + (addr && addr.port || 'unknown'));
 }

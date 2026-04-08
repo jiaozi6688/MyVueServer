@@ -13,8 +13,18 @@ const adminGoodsRouter = require('./routes/admingoods');
 const addressRouter = require('./routes/address');
 // 引入商品路由
 const goodlistRouter = require('./routes/goodlist');
-// 引入WebSocket服务
-const wss = require('./routes/ws');
+
+// 引入搜索路由
+const searchRouter = require('./routes/search');
+// 引入AI路由
+const aiRouter = require('./routes/ai');
+// 引入验证token时间路由
+const tokenverifyRouter = require('./routes/TokenVerify');
+/*  ===========================中间件  =========================== */
+// 验证token中间件
+const { VerifyToken } = require('./midfile/jwtMIddleWare');
+const { isShangJia } = require('./midfile/adminMIddleware');
+
 
 var app = express();
 
@@ -23,10 +33,11 @@ app.use(cors({
   origin: ['http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:5173',
-    'http://127.0.0.1:5173'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+    'http://127.0.0.1:5173',
+    'http://localhost:4173'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // mongoose
@@ -49,19 +60,26 @@ mongoose.connection.on('error', function (err) {
 mongoose.connection.on('disconnected', function () {
   console.log('数据库连接断开');
 });
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/login', usersRouter);
+// 登录路由
+app.use('/', usersRouter);
+// 购物车路由
 app.use('/cart', cartRouter);
 // 商家商品路由
-app.use('/admingoods', adminGoodsRouter);
+app.use('/admingoods', VerifyToken, isShangJia, adminGoodsRouter);
 // 用户地址路由
 app.use('/userads', addressRouter);
 // 商品路由
 app.use('/getgoodslist', goodlistRouter);
-
+// 搜索路由
+app.use('/search', searchRouter);
+// AI路由
+app.use('/chat', aiRouter);
+// 验证token时间路由
+app.use('/tokenverify', tokenverifyRouter);
 module.exports = app;

@@ -1,8 +1,6 @@
 // 是所有用户都可以查看的商品数据库  商品列表
 // 商品模型
 // 商品模型 商品列表 所有用户都可以查看的商品数据库
-
-
 const mongoose = require('mongoose');
 const GoodsSchema = new mongoose.Schema({
 
@@ -28,4 +26,8 @@ const GoodsSchema = new mongoose.Schema({
         default: ''//默认值为空字符串
     },
 })
+// 商品模型 商品列表 所有用户都可以查看的商品数据库
+// 第一个参数 商品模型名称
+// 第二个参数 商品数据库模型
+// 第三个参数 商品数据库集合名称 这个是可选的 如果不写 默认是模型名称的小写
 module.exports = mongoose.model('Goods', GoodsSchema, 'goodslist');
