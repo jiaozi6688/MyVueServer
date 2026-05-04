@@ -77,16 +77,23 @@ router.post('/login', async function (req, res, next) {
           res.cookie('name', user.username, {
             maxAge: 1000 * 60 * 60 * 24,
             httpOnly: true,
-            sameSite: 'lax',
-            secure: false,
+            sameSite: 'none',
+            secure: true,
             path: '/'
           });
           // token设置喂httpOnly  不能被js获取
           res.cookie('token', token, {
             maxAge: 1000 * 60 * 60 * 24,
             httpOnly: true,
-            sameSite: 'lax',
-            secure: false,
+            sameSite: 'none',
+            secure: true,
+            path: '/'
+          });
+          res.cookie('userId', user._id.toString(), {
+            maxAge: 1000 * 60 * 60 * 24,
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
             path: '/'
           });
           // 保存用户状态

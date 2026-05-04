@@ -6,6 +6,24 @@ const UserStatus = require('../models/userstatus');
 const TOKEN_EXPIRES_IN = '1d';
 // 设置token签名密钥
 const TOKEN_SECRET_KEY = 'yuelei13393587702';
+async function tokenUpdate(userStatus, res) {
+    // 如果token过期或者剩余时间不足15分钟，自动更新token
+    if (Date.now() + 1000 * 60 * 15 > userStatus.tokenExpireTime) {
+        // 重新生成token
+        const newToken = SetToken(userStatus);
+        // 设置新token到cookie
+        res.cookie('token', newToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+        });
+        // 更新数据库中的token和过期时间
+        userStatus.token = newToken;
+        userStatus.tokenExpireTime = Date.now() + 1000 * 60 * 60 * 24; // 重新设置为24小时
+        await userStatus.save();
+        console.log('token更新成功');
+    }
+}
 
 // 设置token
 function SetToken(userInfo) {
@@ -23,12 +41,15 @@ function SetToken(userInfo) {
 
 // 验证token
 async function VerifyToken(req, res, next) {
-    const { userId } = req.body;
-    const { token } = req.cookies;
+    const { token, userId } = req.cookies;
+    console.log('token:', token);
+    console.log('userId:', userId);
+    console.log('req.cookies:', req.cookies);
+
     // 从数据库中查询userstatus表中的userId 返回的时userStatus对象符合userId的文档
     // 从数据库中查询userstatus表中的userId 返回的时userStatus对象符合userId的文档
     const userStatus = await UserStatus.findOne({ userId: userId });
-    console.log(userStatus);
+    console.log('userStatus:', userStatus);
     // 如果userStatus不存在  则  说明token不存在
     if (!userStatus) {
         return res.status(401).json({
@@ -53,31 +74,13 @@ async function VerifyToken(req, res, next) {
             code: 401
         });
     }
-
-    // 如果token过期或者剩余时间不足15分钟，自动更新token
-    if (Date.now() > userStatus.tokenExpireTime ||
-        Date.now() + 1000 * 60 * 15 > userStatus.tokenExpireTime) {
-        // 重新生成token
-        const newToken = SetToken(userStatus);
-        // 设置新token到cookie
-        res.cookie('token', newToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-        });
-        // 更新数据库中的token和过期时间
-        userStatus.token = newToken;
-        userStatus.tokenExpireTime = Date.now() + 1000 * 60 * 60 * 24; // 重新设置为24小时
-        await userStatus.save();
-        console.log('token更新成功');
-    }
-
+    // 更新token
+    await tokenUpdate(userStatus, res);
 
 
 
     jwt.verify(req.cookies.token, TOKEN_SECRET_KEY, (err, data) => {
         if (err) {
-            console.log('token验证失败');
             console.log('token验证失败:', err);
             return res.status(401).json({
                 message: '请重新登录',
@@ -96,3 +99,4 @@ module.exports = {
     SetToken,
     VerifyToken,
 }
+

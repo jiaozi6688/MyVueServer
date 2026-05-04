@@ -26,7 +26,7 @@ const { VerifyToken } = require('./midfile/jwtMIddleWare');
 const { isShangJia } = require('./midfile/adminMIddleware');
 
 
-var app = express();
+const app = express();
 
 // 增强跨域配置
 app.use(cors({
@@ -34,14 +34,16 @@ app.use(cors({
     'http://127.0.0.1:3000',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
-    'http://localhost:4173'],
+    'http://localhost:4173',
+    'https://multicuspidate-nena-filosus.ngrok-free.dev'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    allowCredentials: true,
 }));
 
 // mongoose
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 // 连接数据库
 mongoose.connect('mongodb://localhost:27017/usermessage').then(() => {
   console.log('数据库连接成功');

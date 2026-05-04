@@ -51,7 +51,7 @@ router.get('/getadrs/:userId', async function (req, res, next) {
         console.log('数据库查询结果:', addresses);
         if (addresses.length === 0) {
             console.log('用户暂无地址');
-            return res.status(404).json({ message: '用户暂无地址' });
+            return res.status(200).json({ message: '用户暂无地址' });
         }
         // 第2步：数据库完成后才执行这里
         return res.status(200).json({
